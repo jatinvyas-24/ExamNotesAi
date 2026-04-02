@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
-import { boolean } from "webidl-conversions";
+
 
 const userSchema = new mongoose.Schema({  
     name:{
-        type:string ,
+        type:String ,
         required: true
     },
     email:{
-        type:string,
+        type:String,
         unique: true,
         required: true
     },
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
 
     },
     isCreditAvailable:{
-        type: boolean,
+        type: Boolean,
         default:true
     },
     notes:{
