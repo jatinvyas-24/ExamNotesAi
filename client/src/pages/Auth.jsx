@@ -5,8 +5,13 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../utils/firebase';
 import { serverUrl } from '../App';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { setUserData } from '../redux/userSlice';
+import { useDispatch } from 'react-redux';
 
 function Auth() {
+const navigate = useNavigate()
+const dispatch = useDispatch()
 
   const handleGoogleAuth = async () => {
     try{
@@ -23,6 +28,8 @@ function Auth() {
         withCredentials: true
       })
       console.log(result.data)
+       dispatch(setUserData(result.data))
+       navigate("/");
 
     } catch(error) {
       console.log(error)
