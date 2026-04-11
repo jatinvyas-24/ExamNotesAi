@@ -49,7 +49,9 @@ function Home() {
               
 
             </motion.p>
-            <motion.button
+            
+          </motion.div>
+          <motion.button
             
                         onClick={() =>{ navigate("/notes")}}
                         whileHover={{
@@ -65,7 +67,6 @@ function Home() {
                            shadow-[0_25px_60px_rgba(0,0,0,0.3)]'>
                          Get Started
               </motion.button>
-          </motion.div>
         </div>
 
         <motion.div 
