@@ -6,6 +6,7 @@ import cors from 'cors';
 import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import notesRouter from './routes/generate.route.js';
+import pdfRouter from './routes/pdf.route.js';
 
 
 dotenv.config()
@@ -29,6 +30,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/user', userRouter)
 
 app.use('/api/notes', notesRouter);
+app.use('/api/pdf', pdfRouter);
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

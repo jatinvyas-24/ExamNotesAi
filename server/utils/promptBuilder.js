@@ -53,7 +53,7 @@ REVISION MODE RULES (CRITICAL):
     - definition
     - short explanation
     - examples (if applicable)
-  - Paragraph length: max 2–4 lines
+  - Paragraph length: max 3-5  lines
   - No storytelling, no extra theory
 
 IMPORTANCE RULES:
@@ -77,7 +77,7 @@ DIAGRAM RULES:
 CHART RULES (RECHARTS):
 - If INCLUDE CHARTS is YES:
   - charts array MUST NOT be empty
-  - Generate at least ONE chart
+  - Generate at least two chart
   - Choose chart based on topic type:
     - THEORY topic → bar or pie (importance / weightage)
     - PROCESS topic → bar or line (steps / stages)

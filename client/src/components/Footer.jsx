@@ -61,7 +61,7 @@ function Footer() {
                 <h1 className='text-sm font-semibold text-white mb-4'> Quick Links</h1>
                 <ul className='space-y-2 text-sm cursor-pointer'>
                     <li onClick={()=> navigate("/notes")} className='text-gray-300 hover:text-white transition-colors' > Notes</li>
-                    <li onClick={()=> navigate("/hitory")} className='text-gray-300 hover:text-white transition-colors' > History</li>
+                    <li onClick={()=> navigate("/history")} className='text-gray-300 hover:text-white transition-colors' > History</li>
                     <li onClick={()=> navigate("/pricing")} className='text-gray-300 hover:text-white transition-colors' > Add Credits</li>
                 </ul>
             </div>
