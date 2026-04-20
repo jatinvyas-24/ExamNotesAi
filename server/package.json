@@ -81,6 +81,7 @@
     "media-typer": "^1.1.0",
     "memory-pager": "^1.5.0",
     "merge-descriptors": "^2.0.0",
+    "mermaid": "^11.14.0",
     "mime-db": "^1.54.0",
     "mime-types": "^3.0.2",
     "minimatch": "^10.2.4",
@@ -118,6 +119,7 @@
     "send": "^1.2.1",
     "serve-static": "^2.2.1",
     "setprototypeof": "^1.2.0",
+    "sharp": "^0.34.5",
     "side-channel": "^1.1.0",
     "side-channel-list": "^1.0.0",
     "side-channel-map": "^1.0.1",
@@ -143,7 +145,6 @@
     "whatwg-url": "^14.2.0",
     "wrappy": "^1.0.2"
   },
-  "devDependencies": {},
   "scripts": {
     "dev": "nodemon index.js"
   },

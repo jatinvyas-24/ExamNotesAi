@@ -83,8 +83,8 @@ function MermaidSetup({ diagram }) {
   }, [diagram]);
 
   return (
-    <div className="bg-white border rounded-lg p-4 overflow-x-auto">
-      <div ref={containerRef} />
+      <div className="w-full  bg-white border rounded-lg p-4 overflow-x-auto">
+     <div ref={containerRef} className="w-full min-w-full flex justify-center" />
     </div>
   );
 }

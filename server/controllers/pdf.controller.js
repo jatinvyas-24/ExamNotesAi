@@ -1,88 +1,211 @@
-import PDFdocument from "pdfkit"
+import PDFDocument from "pdfkit";
 
 export const pdfDownload = async (req, res) => {
+  try {
     const { result } = req.body;
 
-        if (!result) {
-            return result.status(400).json({ Error: "No content provided" });
-        }
+    if (!result) {
+      return res.status(400).json({ error: "No content provided" });
+    }
 
-        const doc = new PDFdocument({
-            margin: 50
-        })
+    const doc = new PDFDocument({ margin: 50 });
 
-        res.setHeader("Content-type", "application/pdf")
-        res.setHeader("Content-Disposition",
-            'attachment; filename = "ExamNotesAI.pdf"'
-        )
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="ExamNotesAI.pdf"'
+    );
 
-        doc.pipe(res);
+    doc.pipe(res);
 
-        // Title
-        doc.fontSize(20).text("ExamNotes AI", { align: "center" });
-        doc.moveDown();
-        doc.fontSize(14).text(`Importance: ${result.importance}`);
-        doc.moveDown();
+    // ⭐ Convert +P → ⭐
+    const formatStars = (text = "") => text.replace(/\+P/g, "k");
 
-        // Sub Topics
-        doc.fontSize(16).text("Sub Topics");
+    // 🔹 Heading helper
+    const heading = (text) => {
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(16)
+        .fillColor("#111827")
+        .text(text, { underline: true });
+
+      doc.moveDown(0.7);
+    };
+
+    // 🔹 Bullet helper
+    const bullet = (text) => {
+      doc
+        .font("Helvetica")
+        .fontSize(12)
+        .fillColor("black")
+        .text(`• ${text}`, { lineGap: 4 });
+
+      doc.moveDown(0.4);
+    };
+
+    // 🔹 Bold markdown renderer (**text**)
+    const renderLine = (line) => {
+      const parts = line.split("**");
+
+      parts.forEach((part, i) => {
+        doc
+          .font(i % 2 === 1 ? "Helvetica-Bold" : "Helvetica")
+          .fontSize(12)
+          .text(part, {
+            continued: i !== parts.length - 1,
+          });
+      });
+
+      doc.text("");
+    };
+
+    // 🎯 Title
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(22)
+      .fillColor("#4f46e5")
+      .text("ExamNotes AI", { align: "center" });
+
+    doc.moveDown();
+
+    doc
+      .font("Helvetica")
+      .fontSize(14)
+      .fillColor("black")
+      .text(`Importance: ${formatStars(result.importance)}`);
+
+    doc.moveDown(1);
+
+    // 📚 Sub Topics
+    heading("Sub Topics");
+
+    Object.entries(result.subTopics || {}).forEach(([star, topics]) => {
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(13)
+        .text(`${formatStars(star)} Topics:`);
+
+      doc.moveDown(0.4);
+
+      (topics || []).forEach(bullet);
+
+      doc.moveDown(0.5);
+    });
+
+    // 📝 Notes
+    heading("Notes");
+
+    const lines = (result.notes || "")
+      .replace(/\r\n/g, "\n")
+      .replace(/\n{2,}/g, "\n\n")
+      .split("\n");
+
+    lines.forEach((line) => {
+      if (!line.trim()) {
         doc.moveDown(0.5);
+        return;
+      }
 
-        Object.entries(result.subTopics).forEach(([star, topics]) => {
-            doc.moveDown(0.5);
-            doc.fontSize(13).text(`${star} Topics:`);
+      // Markdown heading (#)
+      if (line.startsWith("#")) {
+        doc
+          .font("Helvetica-Bold")
+          .fontSize(14)
+          .text(line.replace(/#+\s/g, ""));
 
-            topics.forEach((t) => {
-                doc.fontSize(12).text(`• ${t}`);
-            });
-        });
+        doc.moveDown(0.4);
+      }
 
-        doc.moveDown();
+      // Markdown bold (**text**)
+      else if (line.includes("**")) {
+        renderLine(line);
+        doc.moveDown(0.3);
+      }
 
-        // Notes
-        doc.fontSize(16).text("Notes");
-        doc.moveDown(0.5);
+      // Normal text
+      else {
+        doc
+          .font("Helvetica")
+          .fontSize(12)
+          .text(line, { lineGap: 4 });
 
-        doc.fontSize(12).text(
-            result.notes.replace(/[#*]/g, "") // removes markdown symbols
-        );
+        doc.moveDown(0.3);
+      }
+    });
 
-        doc.moveDown();
+    doc.moveDown(1);
 
-        // Revision Points
-        doc.fontSize(16).text("Revision Points");
-        doc.moveDown(0.5);
+    // 🔁 Revision Points
+    heading("Revision Points");
 
-        result.revisionPoints.forEach((p) => {
-            doc.fontSize(12).text(`• ${p}`);
-        });
+    (result.revisionPoints || []).forEach(bullet);
 
-        doc.moveDown();
+    doc.moveDown(1);
 
-        // Questions
-        doc.fontSize(16).text("Important Questions");
-        doc.moveDown(0.5);
-        
-        // Short Questions
-        doc.fontSize(13).text("Short Questions:");
-        result.questions.short.forEach((q) => {
-            doc.fontSize(12).text(`• ${q}`);
-        });
+    // ❓ Important Questions
+    heading("Important Questions");
 
-        doc.moveDown(0.5);
+    // Short Questions
+    doc.font("Helvetica-Bold").fontSize(13).text("Short Questions:");
+    doc.moveDown(0.4);
 
-        // Long Questions
-        doc.fontSize(13).text("Long Questions:");
-        result.questions.long.forEach((q) => {
-            doc.fontSize(12).text(`• ${q}`);
-        });
+    (result.questions?.short || []).forEach(bullet);
 
-        doc.moveDown(0.5);
+    doc.moveDown(0.7);
 
-        // Diagram Question
-        doc.fontSize(13).text("Diagram Question:");
-        doc.fontSize(12).text(result.questions.diagram);
+    // Long Questions
+    doc.font("Helvetica-Bold").fontSize(13).text("Long Questions:");
+    doc.moveDown(0.4);
 
-        // End document
-        doc.end();
-}
+    (result.questions?.long || []).forEach(bullet);
+
+    doc.moveDown(0.7);
+
+    // Diagram Question
+    doc.font("Helvetica-Bold").fontSize(13).text("Diagram Question:");
+    doc.moveDown(0.4);
+
+    bullet(result.questions?.diagram || "");
+
+    // 📊 Diagram Image
+    if (result.diagramImage) {
+      doc.addPage();
+      heading("Diagram");
+
+      doc.image(result.diagramImage, {
+        fit: [500, 300],
+        align: "center",
+      });
+
+      doc.moveDown();
+      doc.text("Figure: Diagram", { align: "center" });
+    }
+
+    // 📈 Chart Image
+    if (result.chartImage) {
+      doc.addPage();
+      heading("Chart");
+
+      doc.image(result.chartImage, {
+        fit: [500, 300],
+        align: "center",
+      });
+
+      doc.moveDown();
+      doc.text("Figure: Chart", { align: "center" });
+    }
+
+    // 📌 Footer
+    doc.moveDown(2);
+    doc
+      .font("Helvetica-Oblique")
+      .fontSize(10)
+      .fillColor("gray")
+      .text("Generated by ExamNotes AI", { align: "center" });
+
+    doc.end();
+  } catch (error) {
+    console.error("PDF Error:", error);
+    res.status(500).json({ error: "Failed to generate PDF" });
+  }
+};

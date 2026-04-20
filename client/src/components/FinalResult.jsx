@@ -17,7 +17,7 @@ const markDownComponent = {
     </h2>
   ),
   h3: ({ children }) => (
-    <h3 className='text-lg font-semibold text-gray-800 mt-4 mb-2'>
+    <h3 className='text-lg font-semibold text-indigo-600 mt-4 mb-2'>
       {children}
     </h3>
   ),
@@ -32,19 +32,24 @@ const markDownComponent = {
     </ul>
   ),
   li: ({ children }) => {
-    const text = String(children);
+    // Convert children to plain text safely
+    const text = Array.isArray(children)
+      ? children.map(child =>
+        typeof child === "string" ? child : child?.props?.children || ""
+      ).join("")
+      : children;
 
-    if (text.includes(':')) {
-      const [title, ...rest] = text.split(':');
+    if (typeof text === "string" && text.includes(":")) {
+      const [title, ...rest] = text.split(":");
 
       return (
-        <li className='marker:text-indigo-500'>
-          <strong>{title}:</strong>{rest.join(':')}
+        <li className="marker:text-indigo-500">
+          <strong>{title}:</strong> {rest.join(":")}
         </li>
       );
     }
 
-    return <li className='marker:text-indigo-500'>{children}</li>;
+    return <li className="marker:text-indigo-500">{children}</li>;
   }
 }
 
@@ -81,7 +86,7 @@ function FinalResult({ result }) {
             }`}>
             {quickRevision ? "Exit Revision Mode " : "Quick Revision (5 min)"}
           </button>
-          <button onClick={()=> downloadPdf(result) } className='px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700'>
+          <button onClick={() => downloadPdf(result)} className='px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700'>
             Download PDF
           </button>
         </div>
@@ -133,12 +138,12 @@ function FinalResult({ result }) {
       {result.diagram?.data && <section>
         <SectionHeader icon="📊" title="Diagram" color="cyan" />
 
-        <div className='flex justify-center'><MermaidSetup diagram={result.diagram?.data} /></div>
-          <p className='mt-3 text-xs text-gray-500 italic'>
-              ℹ️ If you need this chart for future refrences or revisions , you can save it by taking a screenshot.
-            </p>
-          
-        
+        <div className='flex  justify-center'><MermaidSetup diagram={result.diagram?.data} /></div>
+        <p className='mt-3 text-xs text-gray-500 italic'>
+          ℹ️ If you need this chart for future refrences or revisions , you can save it by taking a screenshot.
+        </p>
+
+
       </section>}
 
       {!result.diagram?.data && (
@@ -151,10 +156,10 @@ function FinalResult({ result }) {
         <section>
           <SectionHeader icon="📈" title="Visual Charts" color="indigo" />
 
-         <RechartSetup charts={result.charts} />
-            <p className='mt-3 text-xs text-gray-500 italic'>
-              ℹ️ If you need this chart for future refrences or revisions , you can save it by taking a screenshot.
-            </p>
+          <RechartSetup charts={result.charts} />
+          <p className='mt-3 text-xs text-gray-500 italic'>
+            ℹ️ If you need this chart for future refrences or revisions , you can save it by taking a screenshot.
+          </p>
         </section>
       )}
 
