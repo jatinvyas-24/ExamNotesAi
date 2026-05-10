@@ -53,7 +53,7 @@ export const generateNotes = async (req, res) => {
 
         })
 
-        user.credits -= 1
+        user.credits -= 2
         if (user.credits < 10) {
             user.isCreditAvailable = false
         }

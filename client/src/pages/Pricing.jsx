@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import axios from 'axios';
+import { serverUrl } from '../App';
 
 function Pricing() {
 
@@ -14,8 +16,16 @@ function Pricing() {
     try {
       setPayingAmount(amount);
       setPaying(true)
+      const result = await axios.post(serverUrl + "/api/credits/order", { amount }, { withCredentials: true } )
+
+      if(result.data && result.data.url){
+        window.location.href = result.data.url;
+      }
+
+      setPaying(false);
     } catch (error) {
-      
+      setPaying(false);
+      console.log("Error creating checkout session:", error)
     }
   }
 

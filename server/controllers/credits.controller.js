@@ -1,6 +1,10 @@
 
-import { message } from 'statuses'
+
 import Stripe from 'stripe'
+import UserModel from '../models/user.model.js'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
@@ -52,3 +56,33 @@ export const createCreditsOrder = async (req, res) => {
     }
 }
  
+export const stripeWebhook = async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+        console.error(`Webhook error: ${err.message}`);
+        return res.status(400).send(`Webhook error: ${err.message}`);
+    }
+
+    if(event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const userId = session.metadata.userId;
+        const creditsToAdd = Number(session.metadata.credits); 
+
+        if(!userId || !creditsToAdd) {
+            console.error('Missing userId or credits in session metadata');
+            return res.status(400).send('Invalid session metadata');
+        }
+
+        const user = await UserModel.findByIdandUpdate(userId, {
+            $inc: { credits: creditsToAdd },
+            $set: { isCreditAvailable: true },
+        }, { new: true });
+    }
+   
+
+    res.json({ received: true });
+}
