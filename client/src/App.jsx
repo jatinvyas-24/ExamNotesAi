@@ -11,7 +11,7 @@ import History from './pages/History'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentFailed from './pages/PaymentFailed'
 
-export const serverUrl = "http://localhost:8000"
+export const serverUrl = "https://examnotesai-solx.onrender.com"
 
 
 function App() {
