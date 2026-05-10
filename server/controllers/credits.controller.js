@@ -77,7 +77,7 @@ export const stripeWebhook = async (req, res) => {
             return res.status(400).send('Invalid session metadata');
         }
 
-        const user = await UserModel.findByIdandUpdate(userId, {
+        const user = await UserModel.findByIdAndUpdate(userId, {
             $inc: { credits: creditsToAdd },
             $set: { isCreditAvailable: true },
         }, { new: true });
