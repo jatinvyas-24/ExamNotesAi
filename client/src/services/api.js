@@ -1,6 +1,6 @@
 import axios from "axios"
 import { serverUrl } from "../App"
-import { setUserData } from "../redux/userSlice"
+import { setUserData, setLoading } from "../redux/userSlice"
 
 export const getCurrentUser = async (dispatch) => {
     try {
@@ -9,6 +9,7 @@ export const getCurrentUser = async (dispatch) => {
         dispatch(setUserData(result.data))
     } catch (error) {
         console.log("Error fetching current user:", error)
+        dispatch(setLoading(false))
     }
 }
 
