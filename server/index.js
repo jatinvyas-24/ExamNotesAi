@@ -18,7 +18,7 @@ const app = express();
 app.post('/api/credits/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://examnotesai-client-t0bl.onrender.com',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 }))
